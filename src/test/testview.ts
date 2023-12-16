@@ -12,6 +12,7 @@ export class TestLiveView extends LiveView {
         this.assign(context, {
             test: "Hello, World!",
             updated: new Date().toLocaleTimeString(),
+            counter: 0,
         });
 
         this.on(context, "test", async (ctx: LiveContext, event: string) => {
@@ -20,6 +21,20 @@ export class TestLiveView extends LiveView {
             this.assign(ctx, {
                 test: "Hello, World! " + Math.random(),
                 updated: new Date().toLocaleTimeString(),
+            });
+        });
+
+        this.on(context, "increment", async (ctx: LiveContext, event: string) => {
+            this.assign(ctx, {
+                updated: new Date().toLocaleTimeString(),
+                counter: ctx.state.get("counter") + 1,
+            });
+        });
+
+        this.on(context, "decrement", async (ctx: LiveContext, event: string) => {
+            this.assign(ctx, {
+                updated: new Date().toLocaleTimeString(),
+                counter: ctx.state.get("counter") - 1,
             });
         });
     }
@@ -37,6 +52,9 @@ export class TestLiveView extends LiveView {
             <p>Rerender ${state.get("test")}</p>
             <p>Updated at ${state.get("updated")}</p>
             <button live-click="test">Click me</button>
+            <p>Counter: ${state.get("counter")}</p>
+            <button live-click="increment">Increment</button>
+            <button live-click="decrement">Decrement</button>
             `;
     }
 }
