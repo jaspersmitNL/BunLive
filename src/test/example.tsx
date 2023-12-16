@@ -1,3 +1,4 @@
+import { EventEmitter } from "stream";
 import { LiveContext } from "../live/context";
 import { LiveView, liveEncode, useLiveState } from "../live/liveview";
 import { generateId } from "../utils";
@@ -19,6 +20,7 @@ let initialTodos = [
 ];
 
 export class ExampleLiveView extends LiveView {
+    static eventBus = new EventEmitter();
     async onMount(context: LiveContext): Promise<void> {
         this.assign(context, {
             todos: [...initialTodos],
@@ -27,13 +29,14 @@ export class ExampleLiveView extends LiveView {
         this.on(context, "onSubmit", async (ctx: LiveContext, { formData }) => {
             const todo = formData["todo"];
             const todos = ctx.state.get("todos") as Todo[];
-            todos.push({
+            const newTodo = {
                 id: generateId(),
                 text: todo,
-            });
+            };
             this.assign(ctx, {
-                todos,
+                todos: [...todos, newTodo],
             });
+            ExampleLiveView.eventBus.emit("newTodo", { from: context.clientID, newTodo });
         });
 
         this.on(context, "deleteTodo", async (ctx: LiveContext, { liveData }) => {
@@ -43,6 +46,27 @@ export class ExampleLiveView extends LiveView {
             this.assign(ctx, {
                 todos: filteredTodos,
             });
+
+            ExampleLiveView.eventBus.emit("deleteTodo", { from: context.clientID, id });
+        });
+
+        ExampleLiveView.eventBus.on("newTodo", ({ from, newTodo }) => {
+            const todos = useLiveState<Todo[]>(context, "todos");
+            if (from !== context.clientID) {
+                this.assign(context, {
+                    todos: [...todos, newTodo],
+                });
+            }
+        });
+
+        ExampleLiveView.eventBus.on("deleteTodo", ({ from, id }) => {
+            const todos = useLiveState<Todo[]>(context, "todos");
+            if (from !== context.clientID) {
+                const filteredTodos = todos.filter((todo) => todo.id !== id);
+                this.assign(context, {
+                    todos: filteredTodos,
+                });
+            }
         });
     }
 

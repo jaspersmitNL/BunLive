@@ -1,7 +1,15 @@
 import { LiveSocket } from "./socket";
 
 async function main() {
-    const ws = new LiveSocket("ws://localhost:8080/livesocket");
+    let protocol = "ws";
+
+    if (window.location.protocol === "https:") {
+        protocol = "wss";
+    }
+
+    const url = protocol + "://" + window.location.host + "/livesocket";
+
+    const ws = new LiveSocket(url);
     await ws.connect();
 }
 
