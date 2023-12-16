@@ -7,11 +7,12 @@ import { LiveContext } from "./live/context";
 import { LiveSocket } from "./live/livesocket";
 import { LiveViewRegistry } from "./live/liveview";
 import { TestLiveView } from "./test/testview";
+import { UsersLiveView } from "./test/usersview";
 import { generateId, getClientID, setClientID } from "./utils";
 
 let connections = new Map<string, LiveSocket>();
 
-async function liveView(name: string) {
+export async function liveView(name: string) {
     const view = LiveViewRegistry.instance.get(name);
 
     const id = `${name}-${generateId()}`;
@@ -33,6 +34,7 @@ async function liveView(name: string) {
 }
 
 LiveViewRegistry.instance.register("test", new TestLiveView());
+LiveViewRegistry.instance.register("users", new UsersLiveView());
 
 new Elysia()
     .use(html())
@@ -70,6 +72,8 @@ new Elysia()
                 </head>
                 <body>
                     ${await liveView("test")}
+                    <br />
+                    ${await liveView("users")}
                 </body>
             </html>
         `;

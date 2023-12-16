@@ -42,7 +42,11 @@ export class LiveSocket {
         }
     }
 
-    onClose(ws: ElysiaWS<ServerWebSocket<any>>) {}
+    onClose(ws: ElysiaWS<ServerWebSocket<any>>) {
+        //delete all contexts
+        this.contexts.clear();
+        this.ws = undefined;
+    }
 
     send(message: any) {
         this.ws!.send(JSON.stringify(message));
