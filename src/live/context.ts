@@ -1,3 +1,4 @@
+import { EventEmitter } from "stream";
 import { LiveSocket } from "./livesocket";
 import { LiveView } from "./liveview";
 
@@ -8,6 +9,7 @@ export class LiveContext {
     liveView?: LiveView;
     name?: string;
     liveSocket?: LiveSocket;
+    eventBus: EventEmitter = new EventEmitter();
 
     constructor(id: string, clientID: string) {
         this.id = id;

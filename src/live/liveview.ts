@@ -40,7 +40,13 @@ export class LiveView {
         context.liveSocket!.send(rerenderMessage);
     }
 
-    async onEvent(context: LiveContext, event: string, func: string) {}
+    async on(context: LiveContext, event: string, handler: (ctx: LiveContext, event: string) => void) {
+        context.eventBus.on(event, handler.bind(this));
+    }
+
+    async onEvent(context: LiveContext, event: string, func: string) {
+        context.eventBus.emit(func, context, event);
+    }
 }
 
 export class LiveViewRegistry {

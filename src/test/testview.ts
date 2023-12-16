@@ -13,14 +13,14 @@ export class TestLiveView extends LiveView {
             test: "Hello, World!",
             updated: new Date().toLocaleTimeString(),
         });
-    }
 
-    async onEvent(context: LiveContext, event: string, func: string): Promise<void> {
-        console.log("TestLiveView onEvent", event, func);
+        this.on(context, "test", async (ctx: LiveContext, event: string) => {
+            console.log("TestLiveView on test", event);
 
-        this.assign(context, {
-            test: "Hello, World! " + Math.random(),
-            updated: new Date().toLocaleTimeString(),
+            this.assign(ctx, {
+                test: "Hello, World! " + Math.random(),
+                updated: new Date().toLocaleTimeString(),
+            });
         });
     }
 
