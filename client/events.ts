@@ -23,6 +23,39 @@ function setupBindEvent(socket: LiveSocket, element: Element, rootElement: Eleme
     element.setAttribute("live-bind-active", "true");
 }
 
+function setupFormSubmitEvent(socket: LiveSocket, element: Element, rootElement: Element) {
+    if (element.hasAttribute("live-submit-active")) {
+        return;
+    }
+
+    const id = rootElement.getAttribute("data-live-id")!;
+    const functionName = element.getAttribute("live-submit")!;
+
+    element.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(element as HTMLFormElement);
+
+        const data = {};
+        formData.forEach((value, key) => {
+            data[key] = value;
+        });
+
+        const eventMessage = {
+            type: "event",
+            event: "submit",
+            data: {
+                id: id,
+                func: functionName,
+                formData: data,
+            },
+        };
+        socket.send(eventMessage);
+    });
+
+    element.setAttribute("live-submit-active", "true");
+}
+
 function setupSimpleEvent(socket: LiveSocket, element: Element, rootElement: Element, event: string) {
     if (element.hasAttribute(`live-${event}-active`)) {
         return;
@@ -41,7 +74,6 @@ function setupSimpleEvent(socket: LiveSocket, element: Element, rootElement: Ele
             },
         };
         socket.send(eventMessage);
-        console.log("sending..", eventMessage);
     });
 
     element.setAttribute(`live-${event}-active`, "true");
@@ -54,6 +86,10 @@ export function setupEventsRoot(socket: LiveSocket, componentElement: Element) {
 
     componentElement.querySelectorAll("[live-bind]").forEach((element) => {
         setupBindEvent(socket, element, componentElement);
+    });
+
+    componentElement.querySelectorAll("[live-submit]").forEach((element) => {
+        setupFormSubmitEvent(socket, element, componentElement);
     });
 
     componentElement.querySelectorAll("[live-focus]").forEach((element) => {
@@ -72,6 +108,10 @@ export function setupEvents(socket: LiveSocket, element: Element, rootElement: E
 
     if (element.hasAttribute("live-bind")) {
         setupBindEvent(socket, element, rootElement);
+    }
+
+    if (element.hasAttribute("live-submit")) {
+        setupFormSubmitEvent(socket, element, rootElement);
     }
 
     if (element.hasAttribute("live-focus")) {

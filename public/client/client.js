@@ -529,6 +529,32 @@
     });
     element.setAttribute("live-bind-active", "true");
   }
+  function setupFormSubmitEvent(socket, element, rootElement) {
+    if (element.hasAttribute("live-submit-active")) {
+      return;
+    }
+    const id = rootElement.getAttribute("data-live-id");
+    const functionName = element.getAttribute("live-submit");
+    element.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const formData = new FormData(element);
+      const data = {};
+      formData.forEach((value, key) => {
+        data[key] = value;
+      });
+      const eventMessage = {
+        type: "event",
+        event: "submit",
+        data: {
+          id,
+          func: functionName,
+          formData: data
+        }
+      };
+      socket.send(eventMessage);
+    });
+    element.setAttribute("live-submit-active", "true");
+  }
   function setupSimpleEvent(socket, element, rootElement, event) {
     if (element.hasAttribute(`live-${event}-active`)) {
       return;
@@ -545,7 +571,6 @@
         }
       };
       socket.send(eventMessage);
-      console.log("sending..", eventMessage);
     });
     element.setAttribute(`live-${event}-active`, "true");
   }
@@ -555,6 +580,9 @@
     });
     componentElement.querySelectorAll("[live-bind]").forEach((element) => {
       setupBindEvent(socket, element, componentElement);
+    });
+    componentElement.querySelectorAll("[live-submit]").forEach((element) => {
+      setupFormSubmitEvent(socket, element, componentElement);
     });
     componentElement.querySelectorAll("[live-focus]").forEach((element) => {
       setupSimpleEvent(socket, element, componentElement, "focus");
@@ -569,6 +597,9 @@
     }
     if (element.hasAttribute("live-bind")) {
       setupBindEvent(socket, element, rootElement);
+    }
+    if (element.hasAttribute("live-submit")) {
+      setupFormSubmitEvent(socket, element, rootElement);
     }
     if (element.hasAttribute("live-focus")) {
       setupSimpleEvent(socket, element, rootElement, "focus");
