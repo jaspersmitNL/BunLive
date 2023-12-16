@@ -46,7 +46,16 @@ export class LiveSocket {
                     console.error(`LiveView ${message.data.id} not found`);
                     return;
                 }
-                console.log("Rerendering", message);
+
+                const isFormInput = (el) => {
+                    return /^(?:input|select|textarea)$/i.test(el.tagName) && el.type !== "button";
+                };
+
+                const mergeAttributes = (target: any, source: any) => {
+                    source.getAttributeNames().forEach((name) => {
+                        target.setAttribute(name, source.getAttribute(name)!);
+                    });
+                };
 
                 morphdom(element, message.data.html, {
                     onNodeAdded: (node) => {
@@ -54,6 +63,14 @@ export class LiveSocket {
                             setupEvents(this, node, element);
                         }
                         return node;
+                    },
+                    onBeforeElUpdated: (fromEl, toEl) => {
+                        if (isFormInput(fromEl) && fromEl === document.activeElement) {
+                            mergeAttributes(fromEl, toEl);
+                            return false;
+                        }
+
+                        return true;
                     },
                 });
 

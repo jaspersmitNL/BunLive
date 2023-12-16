@@ -14,6 +14,7 @@ declare global {
             "live-submit"?: string;
 
             "live-data"?: string;
+            "live-input"?: string;
         }
     }
 }

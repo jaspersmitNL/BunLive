@@ -15,7 +15,7 @@ export class LiveSocket {
     }
 
     onMessage(ws: ElysiaWS<ServerWebSocket<any>>, payload: LiveMessage) {
-        const simpleEvents = ["click", "blur", "focus", "submit"];
+        const simpleEvents = ["click", "blur", "focus", "submit", "input"];
         switch (payload.type) {
             case "register":
                 this.registerLiveComponent(ws, payload as RegisterMessage);
@@ -71,6 +71,9 @@ export class LiveSocket {
     }
 
     send(message: any) {
+        if (!this.ws) {
+            return;
+        }
         this.ws!.send(JSON.stringify(message));
     }
 

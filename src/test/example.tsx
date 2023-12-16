@@ -25,8 +25,12 @@ export class ExampleLiveView extends LiveView {
         setTimeout(() => {
             this.assign(context, {
                 todos: [...initialTodos],
+                validation: {
+                    isValid: true,
+                    error: "",
+                },
             });
-        }, 1500);
+        }, 400);
 
         this.on(context, "onSubmit", async (ctx: LiveContext, { formData }) => {
             const todo = formData["todo"];
@@ -52,6 +56,43 @@ export class ExampleLiveView extends LiveView {
             ExampleLiveView.eventBus.emit("deleteTodo", { from: context.clientID, id });
         });
 
+        this.on(context, "onInput", async (ctx: LiveContext, { value }) => {
+            let validation = {
+                isValid: true,
+                error: "",
+            };
+
+            let rules = [
+                {
+                    rule: (value: string) => value.length < 3,
+                    error: "Todo must be at least 3 characters",
+                },
+                {
+                    rule: (value: string) => value.length > 20,
+                    error: "Todo must be less than 20 characters",
+                },
+
+                {
+                    rule: (value: string) => !/[A-Z]/.test(value),
+                    error: "Todo must include a capital letter",
+                },
+            ];
+
+            for (let rule of rules) {
+                if (rule.rule(value)) {
+                    validation = {
+                        isValid: false,
+                        error: rule.error,
+                    };
+                    break;
+                }
+            }
+
+            this.assign(ctx, {
+                validation,
+            });
+        });
+
         ExampleLiveView.eventBus.on("newTodo", ({ from, newTodo }) => {
             const todos = useLiveState<Todo[]>(context, "todos");
             if (from !== context.clientID) {
@@ -74,6 +115,7 @@ export class ExampleLiveView extends LiveView {
 
     async render(context: LiveContext, initialRender: boolean) {
         const todos = useLiveState<Todo[]>(context, "todos");
+        const validation = useLiveState<{ isValid: boolean; error: string }>(context, "validation");
 
         return (
             <div class="bg-gray-200 h-screen flex items-center justify-center">
@@ -88,9 +130,21 @@ export class ExampleLiveView extends LiveView {
                                 name="todo"
                                 placeholder="Add a new task"
                                 required
+                                live-input="onInput"
                                 class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
                             />
-                            <button type="submit" class="bg-blue-500 text-white p-2 rounded w-full mb-4 hover:bg-blue-600 mt-2">
+
+                            {validation?.isValid === false && <p class="text-red-500 text-xs italic">{validation?.error}</p>}
+
+                            <button
+                                disabled={!validation?.isValid}
+                                type="submit"
+                                class={
+                                    validation?.isValid
+                                        ? "bg-blue-500 text-white p-2 rounded w-full mb-4 hover:bg-blue-600 mt-2"
+                                        : "bg-blue-500 text-white p-2 rounded w-full mb-4 hover:bg-blue-600 mt-2 opacity-50 cursor-not-allowed"
+                                }
+                            >
                                 Add Task
                             </button>
                         </form>

@@ -51,10 +51,38 @@ function setupFormSubmitEvent(socket: LiveSocket, element: Element, rootElement:
                 liveData: JSON.parse(element.getAttribute("live-data") || "{}"),
             },
         };
+
         socket.send(eventMessage);
+
+        //clear form
+        (element as HTMLFormElement).reset();
     });
 
     element.setAttribute("live-submit-active", "true");
+}
+
+function setupInputEvent(socket: LiveSocket, element: Element, rootElement: Element) {
+    if (element.hasAttribute("live-input-active")) {
+        return;
+    }
+
+    const funcName = element.getAttribute("live-input")!;
+    const id = rootElement.getAttribute("data-live-id")!;
+
+    element.addEventListener("input", () => {
+        socket.send({
+            type: "event",
+            event: "input",
+            data: {
+                id: id,
+                func: funcName,
+                value: (element as HTMLInputElement).value,
+                liveData: JSON.parse(element.getAttribute("live-data") || "{}"),
+            },
+        });
+    });
+
+    element.setAttribute("live-input-active", "true");
 }
 
 function setupSimpleEvent(socket: LiveSocket, element: Element, rootElement: Element, event: string) {
@@ -94,6 +122,10 @@ export function setupEventsRoot(socket: LiveSocket, componentElement: Element) {
         setupFormSubmitEvent(socket, element, componentElement);
     });
 
+    componentElement.querySelectorAll("[live-input]").forEach((element) => {
+        setupInputEvent(socket, element, componentElement);
+    });
+
     componentElement.querySelectorAll("[live-focus]").forEach((element) => {
         setupSimpleEvent(socket, element, componentElement, "focus");
     });
@@ -114,6 +146,10 @@ export function setupEvents(socket: LiveSocket, element: Element, rootElement: E
 
     if (element.hasAttribute("live-submit")) {
         setupFormSubmitEvent(socket, element, rootElement);
+    }
+
+    if (element.hasAttribute("live-input")) {
+        setupInputEvent(socket, element, rootElement);
     }
 
     if (element.hasAttribute("live-focus")) {

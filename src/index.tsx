@@ -17,7 +17,6 @@ export async function liveView(name: string) {
     const id = `${name}-${generateId()}`;
 
     let html = await view.render(new LiveContext(id, ""), true);
-    console.log(html);
     const dom = new JSDOM(html);
 
     //get first div from body
