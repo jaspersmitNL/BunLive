@@ -17,19 +17,20 @@ export async function liveView(name: string) {
     const id = `${name}-${generateId()}`;
 
     let html = await view.render(new LiveContext(id, ""), true);
+    console.log(html);
     const dom = new JSDOM(html);
 
-    const root = dom.window.document.documentElement.querySelector("body")!;
+    //get first div from body
+    const firstDiv = dom.window.document.documentElement.querySelector("body")!.firstElementChild!;
 
     const wrapper = dom.window.document.createElement("div");
     wrapper.setAttribute("data-live", "true");
     wrapper.setAttribute("data-live-id", id);
     wrapper.setAttribute("data-live-name", name);
 
-    wrapper.appendChild(root);
+    wrapper.appendChild(firstDiv);
 
-    const finalHtml = wrapper.outerHTML;
-    return finalHtml;
+    return wrapper.outerHTML;
 }
 
 LiveViewRegistry.instance.register("example", new ExampleLiveView());

@@ -22,9 +22,11 @@ let initialTodos = [
 export class ExampleLiveView extends LiveView {
     static eventBus = new EventEmitter();
     async onMount(context: LiveContext): Promise<void> {
-        this.assign(context, {
-            todos: [...initialTodos],
-        });
+        setTimeout(() => {
+            this.assign(context, {
+                todos: [...initialTodos],
+            });
+        }, 1500);
 
         this.on(context, "onSubmit", async (ctx: LiveContext, { formData }) => {
             const todo = formData["todo"];
@@ -95,6 +97,12 @@ export class ExampleLiveView extends LiveView {
                     </div>
 
                     <ul>
+                        {!todos && (
+                            //scaffold
+                            <li className="flex items-center justify-between bg-gray-100 p-2 mb-2 rounded loading-animation">
+                                <span className="text-gray-800">Loading...</span>
+                            </li>
+                        )}
                         {todos?.map((todo) => (
                             <li id={todo.id} class="flex items-center justify-between bg-gray-100 p-2 mb-2 rounded">
                                 <span class="text-gray-800">{todo.text}</span>
