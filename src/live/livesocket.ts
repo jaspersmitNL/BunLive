@@ -35,6 +35,28 @@ export class LiveSocket {
                     }
 
                     context.liveView!.onEvent(context, payload.event, func);
+                    return;
+                }
+
+                if (payload.event === "bind") {
+                    const data = (payload as any).data as any;
+
+                    const id = data.id;
+                    const varName = data.var;
+                    const value = data.value;
+
+                    const context = this.contexts.get(id);
+
+                    if (!context) {
+                        console.error("Context not found", id);
+                        return;
+                    }
+
+                    context.liveView!.assign(context, {
+                        [varName]: value,
+                    });
+
+                    return;
                 }
 
                 break;

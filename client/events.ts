@@ -24,6 +24,30 @@ export function setupEventsRoot(socket: LiveSocket, componentElement: Element) {
 
         element.setAttribute("data-live-click", functionName);
     });
+
+    //live-bind
+    componentElement.querySelectorAll("[live-bind]").forEach((element) => {
+        if (element.hasAttribute("data-live-bind")) {
+            return;
+        }
+
+        const varName = element.getAttribute("live-bind")!;
+        const id = componentElement.getAttribute("data-live-id")!;
+
+        element.addEventListener("input", () => {
+            socket.send({
+                type: "event",
+                event: "bind",
+                data: {
+                    id: id,
+                    var: varName,
+                    value: (element as HTMLInputElement).value,
+                },
+            });
+        });
+
+        element.setAttribute("data-live-bind", varName);
+    });
 }
 
 export function setupEvents(socket: LiveSocket, element: Element, rootElement: Element) {
@@ -41,6 +65,23 @@ export function setupEvents(socket: LiveSocket, element: Element, rootElement: E
                 data: {
                     id: id,
                     func: functionName,
+                },
+            });
+        });
+    }
+
+    if (element.hasAttribute("live-bind")) {
+        const varName = element.getAttribute("live-bind")!;
+        const id = rootElement.getAttribute("data-live-id")!;
+
+        element.addEventListener("input", () => {
+            socket.send({
+                type: "event",
+                event: "bind",
+                data: {
+                    id: id,
+                    var: varName,
+                    value: (element as HTMLInputElement).value,
                 },
             });
         });

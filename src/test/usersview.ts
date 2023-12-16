@@ -14,6 +14,7 @@ export class UsersLiveView extends LiveView {
         const users = await response.json();
 
         this.assign(context, {
+            search: "",
             users: users,
         });
     }
@@ -23,11 +24,22 @@ export class UsersLiveView extends LiveView {
             return "Loading...";
         }
 
+        const search = context.state.get("search");
         return `
-            <h1>Users</h1>
+            <h1>Users: ${search}</h1>
+
+            <input type="text" live-bind="search" value="${search || ""}" placeholder="Search." />
+
             <ul>
                 ${context.state
                     .get("users")
+                    .filter((user: any) => {
+                        if (search === "") {
+                            return true;
+                        }
+
+                        return user.name.toLowerCase().trim().includes(search.toLowerCase());
+                    })
                     .map((user: any) => `<li>${user.name}</li>`)
                     .join("")}
             </ul>

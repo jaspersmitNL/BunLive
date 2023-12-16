@@ -530,6 +530,25 @@
       });
       element.setAttribute("data-live-click", functionName);
     });
+    componentElement.querySelectorAll("[live-bind]").forEach((element) => {
+      if (element.hasAttribute("data-live-bind")) {
+        return;
+      }
+      const varName = element.getAttribute("live-bind");
+      const id = componentElement.getAttribute("data-live-id");
+      element.addEventListener("input", () => {
+        socket.send({
+          type: "event",
+          event: "bind",
+          data: {
+            id,
+            var: varName,
+            value: element.value
+          }
+        });
+      });
+      element.setAttribute("data-live-bind", varName);
+    });
   }
   function setupEvents(socket, element, rootElement) {
     if (element.hasAttribute("live-click")) {
@@ -542,6 +561,21 @@
           data: {
             id,
             func: functionName
+          }
+        });
+      });
+    }
+    if (element.hasAttribute("live-bind")) {
+      const varName = element.getAttribute("live-bind");
+      const id = rootElement.getAttribute("data-live-id");
+      element.addEventListener("input", () => {
+        socket.send({
+          type: "event",
+          event: "bind",
+          data: {
+            id,
+            var: varName,
+            value: element.value
           }
         });
       });
