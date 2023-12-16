@@ -15,17 +15,17 @@ export class LiveSocket {
     }
 
     onMessage(ws: ElysiaWS<ServerWebSocket<any>>, payload: LiveMessage) {
+        const simpleEvents = ["click", "blur", "focus"];
         switch (payload.type) {
             case "register":
                 this.registerLiveComponent(ws, payload as RegisterMessage);
                 break;
 
             case "event": {
-                if (payload.event === "click") {
+                if (simpleEvents.includes(payload.event)) {
                     const data = (payload as any).data as any;
 
                     const id = data.id;
-                    const func = data.func;
 
                     const context = this.contexts.get(id);
 
@@ -34,7 +34,8 @@ export class LiveSocket {
                         return;
                     }
 
-                    context.liveView!.onEvent(context, payload.event, func);
+                    console.log(payload);
+                    context.liveView!.onEvent(context, payload.type, data.func);
                     return;
                 }
 

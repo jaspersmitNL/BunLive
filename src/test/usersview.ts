@@ -7,8 +7,6 @@ export class UsersLiveView extends LiveView {
     }
 
     async onMount(context: LiveContext) {
-        console.log("UsersView onMount");
-
         const response = await fetch("https://jsonplaceholder.typicode.com/users");
         const users = await response.json();
 
@@ -17,7 +15,7 @@ export class UsersLiveView extends LiveView {
             users: users,
         });
 
-        this.on(context, "test", async (ctx: LiveContext, event: string) => {
+        this.on(context, "test", async (ctx: LiveContext) => {
             this.assign(ctx, {
                 search: "",
             });

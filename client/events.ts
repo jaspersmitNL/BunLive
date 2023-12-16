@@ -1,89 +1,84 @@
 import { LiveSocket } from "./socket";
 
-export function setupEventsRoot(socket: LiveSocket, componentElement: Element) {
-    componentElement.querySelectorAll("[live-click]").forEach((element) => {
-        if (element.hasAttribute("data-live-click")) {
-            return;
-        }
+function setupBindEvent(socket: LiveSocket, element: Element, rootElement: Element) {
+    if (element.hasAttribute("live-bind-active")) {
+        return;
+    }
 
-        console.log("live-click", element);
+    const varName = element.getAttribute("live-bind")!;
+    const id = rootElement.getAttribute("data-live-id")!;
 
-        const functionName = element.getAttribute("live-click")!;
-        const id = componentElement.getAttribute("data-live-id")!;
-
-        element.addEventListener("click", () => {
-            socket.send({
-                type: "event",
-                event: "click",
-                data: {
-                    id: id,
-                    func: functionName,
-                },
-            });
+    element.addEventListener("input", () => {
+        socket.send({
+            type: "event",
+            event: "bind",
+            data: {
+                id: id,
+                var: varName,
+                value: (element as HTMLInputElement).value,
+            },
         });
-
-        element.setAttribute("data-live-click", functionName);
     });
 
-    //live-bind
+    element.setAttribute("live-bind-active", "true");
+}
+
+function setupSimpleEvent(socket: LiveSocket, element: Element, rootElement: Element, event: string) {
+    if (element.hasAttribute(`live-${event}-active`)) {
+        return;
+    }
+
+    const id = rootElement.getAttribute("data-live-id")!;
+    const functionName = element.getAttribute(`live-${event}`)!;
+
+    element.addEventListener(event, () => {
+        const eventMessage = {
+            type: "event",
+            event: event,
+            data: {
+                id: id,
+                func: functionName,
+            },
+        };
+        socket.send(eventMessage);
+        console.log("sending..", eventMessage);
+    });
+
+    element.setAttribute(`live-${event}-active`, "true");
+}
+
+export function setupEventsRoot(socket: LiveSocket, componentElement: Element) {
+    componentElement.querySelectorAll("[live-click]").forEach((element) => {
+        setupSimpleEvent(socket, element, componentElement, "click");
+    });
+
     componentElement.querySelectorAll("[live-bind]").forEach((element) => {
-        if (element.hasAttribute("data-live-bind")) {
-            return;
-        }
+        setupBindEvent(socket, element, componentElement);
+    });
 
-        const varName = element.getAttribute("live-bind")!;
-        const id = componentElement.getAttribute("data-live-id")!;
+    componentElement.querySelectorAll("[live-focus]").forEach((element) => {
+        setupSimpleEvent(socket, element, componentElement, "focus");
+    });
 
-        element.addEventListener("input", () => {
-            socket.send({
-                type: "event",
-                event: "bind",
-                data: {
-                    id: id,
-                    var: varName,
-                    value: (element as HTMLInputElement).value,
-                },
-            });
-        });
-
-        element.setAttribute("data-live-bind", varName);
+    componentElement.querySelectorAll("[live-blur]").forEach((element) => {
+        setupSimpleEvent(socket, element, componentElement, "blur");
     });
 }
 
 export function setupEvents(socket: LiveSocket, element: Element, rootElement: Element) {
-    //if element has live-click attribute
-    //add event listener to element
-
     if (element.hasAttribute("live-click")) {
-        const functionName = element.getAttribute("live-click")!;
-        const id = rootElement.getAttribute("data-live-id")!;
-
-        element.addEventListener("click", () => {
-            socket.send({
-                type: "event",
-                event: "click",
-                data: {
-                    id: id,
-                    func: functionName,
-                },
-            });
-        });
+        setupSimpleEvent(socket, element, rootElement, "click");
     }
 
     if (element.hasAttribute("live-bind")) {
-        const varName = element.getAttribute("live-bind")!;
-        const id = rootElement.getAttribute("data-live-id")!;
+        setupBindEvent(socket, element, rootElement);
+    }
 
-        element.addEventListener("input", () => {
-            socket.send({
-                type: "event",
-                event: "bind",
-                data: {
-                    id: id,
-                    var: varName,
-                    value: (element as HTMLInputElement).value,
-                },
-            });
-        });
+    if (element.hasAttribute("live-focus")) {
+        setupSimpleEvent(socket, element, rootElement, "focus");
+    }
+
+    if (element.hasAttribute("live-blur")) {
+        setupSimpleEvent(socket, element, rootElement, "blur");
     }
 }
