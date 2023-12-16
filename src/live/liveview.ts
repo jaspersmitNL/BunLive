@@ -2,8 +2,21 @@ import { JSDOM } from "jsdom";
 import { ReRenderMessage } from "../types/message";
 import { LiveContext } from "./context";
 
-//Key-Value pair type for string -> any
 type KVPair = { [key: string]: any };
+
+declare global {
+    namespace JSX {
+        interface HtmlTag {
+            "live-click"?: string;
+            "live-bind"?: string;
+            "live-focus"?: string;
+            "live-blur"?: string;
+            "live-submit"?: string;
+
+            "live-data"?: string;
+        }
+    }
+}
 
 export class LiveView {
     async render(context: LiveContext, initialRender: boolean): Promise<string> {
@@ -49,6 +62,12 @@ export class LiveView {
     }
 }
 
+export function useLiveState<T>(context: LiveContext, key: string) {
+    return context.state.get(key)! as T;
+}
+export function liveEncode(data: any) {
+    return JSON.stringify(data);
+}
 export class LiveViewRegistry {
     private static _instance: LiveViewRegistry;
 

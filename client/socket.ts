@@ -31,7 +31,7 @@ export class LiveSocket {
         console.log("WebSocket disconnected");
 
         if (this.autoReconnect) {
-            setTimeout(() => window.location.reload(), 500);
+            setTimeout(() => window.location.reload(), 100);
         }
     }
 

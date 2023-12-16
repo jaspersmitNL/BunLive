@@ -5,4 +5,6 @@ async function main() {
     await ws.connect();
 }
 
-document.addEventListener("DOMContentLoaded", main);
+main().catch((err) => {
+    console.error(err);
+});

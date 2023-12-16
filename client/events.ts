@@ -48,6 +48,7 @@ function setupFormSubmitEvent(socket: LiveSocket, element: Element, rootElement:
                 id: id,
                 func: functionName,
                 formData: data,
+                liveData: JSON.parse(element.getAttribute("live-data") || "{}"),
             },
         };
         socket.send(eventMessage);
@@ -71,6 +72,7 @@ function setupSimpleEvent(socket: LiveSocket, element: Element, rootElement: Ele
             data: {
                 id: id,
                 func: functionName,
+                liveData: JSON.parse(element.getAttribute("live-data") || "{}"),
             },
         };
         socket.send(eventMessage);

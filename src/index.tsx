@@ -6,9 +6,7 @@ import { JSDOM } from "jsdom";
 import { LiveContext } from "./live/context";
 import { LiveSocket } from "./live/livesocket";
 import { LiveViewRegistry } from "./live/liveview";
-import { JSXLiveView } from "./test/jsxview";
-import { TestLiveView } from "./test/testview";
-import { UsersLiveView } from "./test/usersview";
+import { ExampleLiveView } from "./test/example";
 import { generateId, getClientID, setClientID } from "./utils";
 
 let connections = new Map<string, LiveSocket>();
@@ -34,9 +32,7 @@ export async function liveView(name: string) {
     return finalHtml;
 }
 
-LiveViewRegistry.instance.register("test", new TestLiveView());
-LiveViewRegistry.instance.register("users", new UsersLiveView());
-LiveViewRegistry.instance.register("jsxtest", new JSXLiveView());
+LiveViewRegistry.instance.register("example", new ExampleLiveView());
 
 new Elysia()
     .use(html())
@@ -71,13 +67,11 @@ new Elysia()
                 <head>
                     <title>Hello World</title>
                     <script src="/client/client.js"></script>
+                    <link href="/client/client.css" rel="stylesheet">
+
                 </head>
                 <body>
-                    ${await liveView("test")}
-                    <br />
-                    ${await liveView("jsxtest")}
-                    <br />
-                    ${await liveView("users")}
+                    ${await liveView("example")}
                 </body>
             </html>
         `;
