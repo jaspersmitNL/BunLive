@@ -95,7 +95,7 @@ export class ExampleLiveView extends LiveView {
         });
 
         ExampleLiveView.eventBus.on("newTodo", ({ from, newTodo }) => {
-            const todos = useLiveState<Todo[]>(context, "todos");
+            const todos = useLiveState<Todo[]>(context, "todos", []);
             if (from !== context.clientID) {
                 this.assign(context, {
                     todos: [...todos, newTodo],

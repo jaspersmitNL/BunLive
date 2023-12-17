@@ -78,7 +78,7 @@ export class LiveView {
 export function useLiveState<T>(context: LiveContext, key: string, defaultValue?: T) {
     const val = context.state.get(key) as T;
 
-    return val ?? defaultValue;
+    return (val ?? defaultValue)!;
 }
 export function liveEncode(data: any) {
     return JSON.stringify(data);
