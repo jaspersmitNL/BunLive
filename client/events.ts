@@ -48,7 +48,7 @@ function setupFormSubmitEvent(socket: LiveSocket, element: Element, rootElement:
                 id: id,
                 func: functionName,
                 formData: data,
-                liveData: JSON.parse(element.getAttribute("live-data") || "{}"),
+                liveData: element.getAttribute("live-data") || "",
             },
         };
 
@@ -70,6 +70,7 @@ function setupInputEvent(socket: LiveSocket, element: Element, rootElement: Elem
     const id = rootElement.getAttribute("data-live-id")!;
 
     element.addEventListener("input", () => {
+        console.log("input");
         socket.send({
             type: "event",
             event: "input",
@@ -77,7 +78,7 @@ function setupInputEvent(socket: LiveSocket, element: Element, rootElement: Elem
                 id: id,
                 func: funcName,
                 value: (element as HTMLInputElement).value,
-                liveData: JSON.parse(element.getAttribute("live-data") || "{}"),
+                liveData: element.getAttribute("live-data") || "",
             },
         });
     });
@@ -100,7 +101,7 @@ function setupSimpleEvent(socket: LiveSocket, element: Element, rootElement: Ele
             data: {
                 id: id,
                 func: functionName,
-                liveData: JSON.parse(element.getAttribute("live-data") || "{}"),
+                liveData: element.getAttribute("live-data") || "",
             },
         };
         socket.send(eventMessage);

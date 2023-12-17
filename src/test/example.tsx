@@ -1,6 +1,6 @@
 import { EventEmitter } from "stream";
 import { LiveContext } from "../live/context";
-import { LiveView, liveEncode, useLiveState } from "../live/liveview";
+import { LiveView, useLiveState } from "../live/liveview";
 import { generateId } from "../utils";
 
 type Todo = {
@@ -29,6 +29,7 @@ export class ExampleLiveView extends LiveView {
                     isValid: true,
                     error: "",
                 },
+                loading: false,
             });
         }, 400);
 
@@ -46,7 +47,7 @@ export class ExampleLiveView extends LiveView {
         });
 
         this.on(context, "deleteTodo", async (ctx: LiveContext, { liveData }) => {
-            const { id } = liveData;
+            const id = liveData;
             const todos = ctx.state.get("todos") as Todo[];
             const filteredTodos = todos.filter((todo) => todo.id !== id);
             this.assign(ctx, {
@@ -111,16 +112,21 @@ export class ExampleLiveView extends LiveView {
                 });
             }
         });
+        console.log("Mounted Example.tsx");
     }
 
-    async render(context: LiveContext, initialRender: boolean) {
+    async render(context: LiveContext) {
         const todos = useLiveState<Todo[]>(context, "todos");
         const validation = useLiveState<{ isValid: boolean; error: string }>(context, "validation");
+        const isLoading = useLiveState<boolean>(context, "loading", true);
+
+        console.log("Render Example.tsx", isLoading);
 
         return (
             <div class="bg-gray-200 h-screen flex items-center justify-center">
                 <div class="bg-white p-8 rounded shadow-md w-full sm:w-96">
                     <h1 class="text-2xl font-bold mb-4">Todo List</h1>
+                    {isLoading && <h1>Loading...</h1>}
 
                     <div class="mb-4">
                         <form live-submit="onSubmit">
@@ -153,14 +159,14 @@ export class ExampleLiveView extends LiveView {
                     <ul>
                         {!todos && (
                             //scaffold
-                            <li className="flex items-center justify-between bg-gray-100 p-2 mb-2 rounded loading-animation">
-                                <span className="text-gray-800">Loading...</span>
+                            <li class="flex items-center justify-between bg-gray-100 p-2 mb-2 rounded loading-animation">
+                                <span class="text-gray-800">Loading...</span>
                             </li>
                         )}
                         {todos?.map((todo) => (
                             <li id={todo.id} class="flex items-center justify-between bg-gray-100 p-2 mb-2 rounded">
                                 <span class="text-gray-800">{todo.text}</span>
-                                <button class="text-red-500" live-data={liveEncode({ id: todo.id })} live-click="deleteTodo">
+                                <button class="text-red-500" live-data={todo.id} live-click="deleteTodo">
                                     Delete
                                 </button>
                             </li>

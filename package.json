@@ -22,6 +22,7 @@
     "@elysiajs/cors": "^0.7.2",
     "@elysiajs/html": "^0.7.3",
     "@elysiajs/static": "^0.7.1",
+    "diff-dom": "^5.1.2",
     "elysia": "^0.7.30",
     "esbuild": "^0.19.9",
     "jsdom": "^23.0.1",

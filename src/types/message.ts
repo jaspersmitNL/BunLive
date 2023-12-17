@@ -13,6 +13,6 @@ export type RegisterMessage = LiveMessage & {
 export type ReRenderMessage = LiveMessage & {
     data: {
         id: string;
-        html: string;
+        diff: string;
     };
 };

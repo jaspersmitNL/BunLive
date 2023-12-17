@@ -1,5 +1,5 @@
-import morphdom from "morphdom";
-import { setupEvents, setupEventsRoot } from "./events";
+import { DiffDOM } from "diff-dom";
+import { setupEventsRoot } from "./events";
 import { LiveMessage } from "./types/message";
 import { getLiveComponentElements } from "./utils";
 
@@ -47,32 +47,13 @@ export class LiveSocket {
                     return;
                 }
 
-                const isFormInput = (el) => {
-                    return /^(?:input|select|textarea)$/i.test(el.tagName) && el.type !== "button";
-                };
+                const patch = JSON.parse(message.data.diff);
 
-                const mergeAttributes = (target: any, source: any) => {
-                    source.getAttributeNames().forEach((name) => {
-                        target.setAttribute(name, source.getAttribute(name)!);
-                    });
-                };
+                const patcher = new DiffDOM();
 
-                morphdom(element, message.data.html, {
-                    onNodeAdded: (node) => {
-                        if (node instanceof Element) {
-                            setupEvents(this, node, element);
-                        }
-                        return node;
-                    },
-                    onBeforeElUpdated: (fromEl, toEl) => {
-                        if (isFormInput(fromEl) && fromEl === document.activeElement) {
-                            mergeAttributes(fromEl, toEl);
-                            return false;
-                        }
+                patcher.apply(element, patch);
 
-                        return true;
-                    },
-                });
+                setupEventsRoot(this, element);
 
                 break;
         }
