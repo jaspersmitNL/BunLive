@@ -1,0 +1,15 @@
+{
+  "name": "bunlive-monorepo",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "watch": "nodemon --watch packages -e ts --exec \"make -j 4\""
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "turbo": "^1.11.2"
+  }
+}

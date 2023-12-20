@@ -1,0 +1,21 @@
+{
+  "name": "@bunlive/example-elysia",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --watch src/index.ts"
+  },
+  "dependencies": {
+    "@bunlive/common": "workspace:*",
+    "@bunlive/core": "workspace:*",
+    "@bunlive/elysia-handler": "workspace:*",
+    "@elysiajs/html": "^0.7.3",
+    "elysia": "^0.7.30"
+  },
+  "devDependencies": {
+    "bun-types": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

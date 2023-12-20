@@ -1,0 +1,21 @@
+{
+  "name": "@bunlive/elysia-handler",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "bunx rimraf dist/ && bunx rimraf tsconfig.tsbuildinfo && bunx rimraf .turbo"
+  },
+  "dependencies": {
+    "@bunlive/core": "workspace:*",
+    "@bunlive/common": "workspace:*"
+  },
+  "devDependencies": {
+    "bun-types": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
