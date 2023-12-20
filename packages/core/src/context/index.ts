@@ -3,11 +3,18 @@ import { Optional } from "@bunlive/common";
 export default class LiveContext<T> {
   id: string;
   clientID: string;
-  state?: Optional<T>;
+  componentName: string;
+  state: Optional<T>;
 
-  constructor(id: string, clientID: string, state?: Optional<T>) {
+  constructor(
+    id: string,
+    clientID: string,
+    componentName: string,
+    state: Optional<T> = {}
+  ) {
     this.id = id;
     this.clientID = clientID;
+    this.componentName = componentName;
     this.state = state;
   }
 

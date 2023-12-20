@@ -1,6 +1,6 @@
 import LiveContext from "../context";
 
-export default class LiveView<T> {
+export class LiveView<T> {
   async onMount(ctx: LiveContext<T>) {}
   async onUnmount(ctx: LiveContext<T>) {}
   async render(ctx: LiveContext<T>): Promise<string> {
