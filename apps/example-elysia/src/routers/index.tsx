@@ -52,7 +52,11 @@ export const indexRouter = new Elysia()
                     <title>Hello World</title>
                     <script src="/client/client.js" defer></script>
                 </head>
-                <body>{liveView('myLiveView')}</body>
+                <body>
+                    {liveView('myLiveView')}
+                    <hr />
+                    {liveView('myLiveView')}
+                </body>
             </html>
         );
     });

@@ -35,7 +35,9 @@ export class LiveViewCore {
     }
 
     onConnectionClosed(handler: WebSocketHandler) {
-        const contexts = Array.from(this.contexts.values()).filter((ctx) => ctx.wsHandler === handler);
+        const wsID = handler.getID();
+
+        const contexts = Array.from(this.contexts.values()).filter((ctx) => ctx.wsHandler?.getID() === wsID);
 
         console.log(
             '[Core] Closing contexts:',
