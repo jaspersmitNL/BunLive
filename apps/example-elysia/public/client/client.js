@@ -1696,6 +1696,7 @@
     register(element) {
       const componentName = element.getAttribute("live-component");
       const liveID = element.getAttribute("live-id");
+      const args = element.getAttribute("live-args") || "";
       if (!componentName || !liveID) {
         return;
       }
@@ -1703,7 +1704,8 @@
         type: "register",
         data: {
           componentName,
-          liveID
+          liveID,
+          args
         }
       });
     }

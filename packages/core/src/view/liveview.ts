@@ -4,7 +4,7 @@ import { liveViewCore, wrapComponent } from '..';
 import LiveContext from '../context';
 
 export class LiveView<T> {
-    async onMount(ctx: LiveContext<T>) {}
+    async onMount(ctx: LiveContext<T>, args: Record<string, any>) {}
     async onUnmount(ctx: LiveContext<T>) {}
     async render(ctx: LiveContext<T>): Promise<string> {
         throw new Error('Please implement render method');

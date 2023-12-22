@@ -1,7 +1,8 @@
+import { base64Encode } from '@bunlive/common';
 import { generateId, liveViewRegistry, wrapComponent } from '..';
 import LiveContext from '../context';
 
-export async function liveView(name: string): Promise<string> {
+export async function liveView(name: string, args: Record<string, any> = {}): Promise<string> {
     const view = liveViewRegistry.byName(name);
 
     if (!view) {
@@ -14,5 +15,5 @@ export async function liveView(name: string): Promise<string> {
 
     const html = await view.render(ctx);
 
-    return wrapComponent(html, ctx);
+    return wrapComponent(html, ctx, base64Encode(JSON.stringify(args)));
 }

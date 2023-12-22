@@ -5,22 +5,21 @@ import Elysia from 'elysia';
 
 type MyLiveViewState = {
     message: string;
-
-    updatedAt: string;
+    tz: string;
+    time: string;
 };
 
 class MyLiveView extends LiveView<MyLiveViewState> {
-    async onMount(ctx: LiveContext<MyLiveViewState>): Promise<void> {
+    async onMount(ctx: LiveContext<MyLiveViewState>, args: Record<string, any>): Promise<void> {
         console.log('[MyLiveView] mounted');
 
         this.assign(ctx, {
             message: 'Hello World',
+            tz: args.tz,
         });
-
         ctx.ctx.ticker = setInterval(() => {
-            console.log('[MyLiveView] update');
             this.assign(ctx, {
-                updatedAt: new Date().toLocaleTimeString(),
+                time: this.timeFromTZ(args.tz),
             });
         }, 1000);
     }
@@ -29,11 +28,29 @@ class MyLiveView extends LiveView<MyLiveViewState> {
         console.log('[MyLiveView] unmounted');
     }
 
+    timeFromTZ(tz: string) {
+        const date = new Date();
+        const options = {
+            timeZone: tz,
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+        } as const;
+        return date.toLocaleString('en-US', options);
+    }
+
     async render(ctx: LiveContext<MyLiveViewState>): Promise<string> {
+        let isLoading = ctx.get('message', '') === '';
+
+        if (isLoading) {
+            return <div>Loading...</div>;
+        }
+
         return (
             <div>
-                <h1>{ctx.get('message', 'Loading...')}</h1>
-                <p>{ctx.get('updatedAt', '')}</p>
+                <h1>{ctx.get('message', '')}</h1>
+                <p>{ctx.get('tz', '')} </p>
+                <p>{ctx.get('time', '')}</p>
             </div>
         );
     }
@@ -53,9 +70,9 @@ export const indexRouter = new Elysia()
                     <script src="/client/client.js" defer></script>
                 </head>
                 <body>
-                    {liveView('myLiveView')}
+                    {liveView('myLiveView', { tz: 'Europe/Amsterdam' })}
                     <hr />
-                    {liveView('myLiveView')}
+                    {liveView('myLiveView', { tz: 'Europe/Lisbon' })}
                 </body>
             </html>
         );

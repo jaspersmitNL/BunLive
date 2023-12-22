@@ -1,4 +1,4 @@
-import { Message, MessageType, RegisterMessage } from '@bunlive/common';
+import { Message, MessageType, RegisterMessage, base64Decode } from '@bunlive/common';
 import { WebSocketHandler, generateId, liveViewRegistry } from '.';
 import LiveContext from './context';
 
@@ -62,7 +62,15 @@ export class LiveViewCore {
 
         this.contexts.set(contextID, context);
 
-        await context.view?.onMount(context);
+        let args: Record<string, any> = {};
+
+        try {
+            args = JSON.parse(base64Decode(message.data.args));
+        } catch (e) {
+            console.error('[Core] Failed to parse args:', e);
+        }
+
+        await context.view?.onMount(context, args);
     }
 }
 

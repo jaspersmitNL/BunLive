@@ -7,6 +7,7 @@ export type RegisterMessage = Message & {
     data: {
         componentName: string;
         liveID: string;
+        args: string;
     };
 };
 

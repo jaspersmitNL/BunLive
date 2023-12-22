@@ -48,6 +48,7 @@ export class LiveSocket {
     private register(element: Element) {
         const componentName = element.getAttribute('live-component');
         const liveID = element.getAttribute('live-id');
+        const args = element.getAttribute('live-args') || '';
 
         if (!componentName || !liveID) {
             return;
@@ -58,6 +59,7 @@ export class LiveSocket {
             data: {
                 componentName,
                 liveID,
+                args,
             },
         });
     }
