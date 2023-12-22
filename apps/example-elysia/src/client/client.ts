@@ -12,6 +12,8 @@ async function main() {
     const url = protocol + '://' + window.location.host + '/live';
 
     const socket = new LiveSocket(url);
+
+    (<any>window).liveSocket = socket;
     socket.connect();
 }
 

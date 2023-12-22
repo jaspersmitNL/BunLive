@@ -1694,6 +1694,9 @@
       }
     }
     register(element) {
+      if (element.getAttribute("live-registered") === "true") {
+        return;
+      }
       const componentName = element.getAttribute("live-component");
       const liveID = element.getAttribute("live-id");
       const args = element.getAttribute("live-args") || "";
@@ -1708,8 +1711,34 @@
           args
         }
       });
+      element.setAttribute("live-registered", "true");
     }
   };
+
+  // ../../packages/client/dist/index.js
+  function getClosestLiveElement(element) {
+    if (element.getAttribute === void 0) {
+      return null;
+    }
+    if (element.getAttribute("live-component")) {
+      return element;
+    }
+    if (element.parentElement) {
+      return getClosestLiveElement(element.parentElement);
+    }
+    return null;
+  }
+  window.addEventListener("DOMNodeInserted", (event) => {
+    var _a;
+    const liveElement = getClosestLiveElement(event.target);
+    if (liveElement) {
+      const isRegistered = liveElement.getAttribute("live-registered");
+      if (!isRegistered) {
+        console.log("[Client] new element inserted: ", liveElement);
+        (_a = window.liveSocket) == null ? void 0 : _a.register(liveElement);
+      }
+    }
+  });
 
   // src/client/client.ts
   console.log("client.ts is loading");
@@ -1720,6 +1749,7 @@
     }
     const url = protocol + "://" + window.location.host + "/live";
     const socket = new LiveSocket(url);
+    window.liveSocket = socket;
     socket.connect();
   }
   main().catch((err) => {

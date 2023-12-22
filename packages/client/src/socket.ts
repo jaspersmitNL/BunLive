@@ -45,7 +45,10 @@ export class LiveSocket {
         }
     }
 
-    private register(element: Element) {
+    public register(element: Element) {
+        if (element.getAttribute('live-registered') === 'true') {
+            return;
+        }
         const componentName = element.getAttribute('live-component');
         const liveID = element.getAttribute('live-id');
         const args = element.getAttribute('live-args') || '';
@@ -62,5 +65,7 @@ export class LiveSocket {
                 args,
             },
         });
+
+        element.setAttribute('live-registered', 'true');
     }
 }

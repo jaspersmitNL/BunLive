@@ -10,6 +10,11 @@ export class LiveView<T> {
         throw new Error('Please implement render method');
     }
 
+    useLiveValue<V>(ctx: LiveContext<T>, key: keyof T, defaultValue: V): V {
+        const value = ctx.get(key, defaultValue as T[keyof T]);
+        return value as V;
+    }
+
     async assign(context: LiveContext<T>, data: Partial<T>) {
         const oldHtml = wrapComponent(await this.render(context), context);
 
