@@ -5,11 +5,12 @@
   "module": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "watch": "tsc -w",
-    "clean": "bunx rimraf dist/ && bunx rimraf tsconfig.tsbuildinfo && bunx rimraf .turbo"
+    "dev": "tsc -w"
   },
   "dependencies": {
-    "@bunlive/common": "workspace:*"
+    "@bunlive/common": "workspace:*",
+    "diff-dom": "^5.1.2",
+    "pino": "^8.17.1"
   },
   "devDependencies": {
     "bun-types": "latest"

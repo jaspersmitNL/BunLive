@@ -1,15 +1,19 @@
 {
-  "name": "bunlive-monorepo",
-  "private": true,
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ],
-  "scripts": {
-    "watch": "nodemon --watch packages -e ts --exec \"make -j 4 || exit 1\""
-  },
-  "devDependencies": {
-    "nodemon": "^3.0.2",
-    "turbo": "^1.11.2"
-  }
+    "name": "bunlive-monorepo",
+    "private": true,
+    "workspaces": [
+        "packages/*",
+        "apps/*"
+    ],
+    "scripts": {
+        "build": "turbo run build",
+        "dev": "turbo run dev",
+        "format": "prettier --write ."
+    },
+    "devDependencies": {
+        "prettier": "^3.1.1"
+    },
+    "dependencies": {
+        "turbo": "^1.11.2"
+    }
 }

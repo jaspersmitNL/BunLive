@@ -1,10 +1,12 @@
 .turbo/
 node_modules/
+bun.lockb
 
 packages/*/.turbo/
 packages/*/dist/
 packages/*/node_modules/
 packages/*/tsconfig.tsbuildinfo
+packages/*/bun.lockb
 
 apps/*/.turbo/
 apps/*/dist/

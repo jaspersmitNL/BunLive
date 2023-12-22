@@ -1,50 +1,44 @@
-import { MessageHandler, WebSocketHandler } from "@bunlive/core";
-import { ServerWebSocket } from "bun";
-import { ElysiaWS } from "elysia/ws";
+import { Message } from '@bunlive/common';
+import { WebSocketHandler, liveViewCore } from '@bunlive/core';
+import { ServerWebSocket } from 'bun';
+import { ElysiaWS } from 'elysia/ws';
 
 export function setWSID(ws: ElysiaWS<ServerWebSocket<any>>, id: string): void {
-  (ws.data as typeof ws.data & { clientID: string }).clientID = id;
+    (ws.data as typeof ws.data & { clientID: string }).clientID = id;
 }
 
 export function getWSID(ws: ElysiaWS<ServerWebSocket<any>>): string {
-  return (ws.data as typeof ws.data & { clientID: string }).clientID;
+    return (ws.data as typeof ws.data & { clientID: string }).clientID;
 }
 
 export class ElysiaWebSocketHandler implements WebSocketHandler {
-  ws: ElysiaWS<ServerWebSocket<any>>;
+    ws: ElysiaWS<ServerWebSocket<any>>;
 
-  constructor(ws: ElysiaWS<ServerWebSocket<any>>) {
-    this.ws = ws;
-  }
+    constructor(ws: ElysiaWS<ServerWebSocket<any>>) {
+        this.ws = ws;
+    }
 
-  onConnectionOpen(): void {
-    console.log("WebSocket connection opened:", this.getID());
-  }
+    onConnectionOpen(): void {
+        this.send({ type: 'ping' });
+    }
 
-  onMessageReceived(message: any): void {
-    console.log("WebSocket message received:", this.getID(), message);
+    onMessageReceived(message: Message): void {
+        liveViewCore.handleMessage(message, this);
+    }
 
-    this.send(["Pong", message]);
-  }
+    onConnectionClosed(): void {}
+    send<T extends Message>(message: T): void {
+        this.ws.send(message);
+    }
 
-  onConnectionClosed(): void {
-    console.log("WebSocket connection closed:", this.getID());
-  }
-  send(message: any): void {
-    this.ws.send(message);
-  }
+    isConnected(): boolean {
+        return false;
+    }
 
-  async subscribe(handler: MessageHandler): Promise<string> {
-    return "-1";
-  }
-  isConnected(): boolean {
-    return false;
-  }
-
-  setID(id: string): void {
-    setWSID(this.ws, id);
-  }
-  getID(): string {
-    return getWSID(this.ws);
-  }
+    setID(id: string): void {
+        setWSID(this.ws, id);
+    }
+    getID(): string {
+        return getWSID(this.ws);
+    }
 }

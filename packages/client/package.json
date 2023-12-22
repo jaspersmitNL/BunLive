@@ -1,10 +1,15 @@
 {
   "name": "@bunlive/client",
   "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "watch": "tsc -w",
-    "clean": "bunx rimraf dist/ && bunx rimraf tsconfig.tsbuildinfo && bunx rimraf .turbo"
+    "dev": "tsc -w"
+  },
+  "dependencies": {
+    "@bunlive/common": "workspace:*",
+    "diff-dom": "^5.1.2"
   },
   "devDependencies": {
     "bun-types": "latest"
