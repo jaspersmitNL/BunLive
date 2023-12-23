@@ -31,8 +31,33 @@
     };
     (_a = getLiveSocket()) == null ? void 0 : _a.send(message);
   };
+  var handleInputEvent = (event) => {
+    var _a;
+    const target = event.target;
+    const liveInput = target.getAttribute("live-input");
+    if (!liveInput) {
+      return;
+    }
+    const liveElement = getClosestLiveElement(target);
+    if (!liveElement) {
+      return;
+    }
+    console.log("input event", liveElement, liveInput);
+    const message = {
+      type: "event",
+      data: {
+        componentName: liveElement.getAttribute("live-component"),
+        liveID: liveElement.getAttribute("live-id"),
+        event: "input",
+        name: liveInput,
+        value: target.value
+      }
+    };
+    (_a = getLiveSocket()) == null ? void 0 : _a.send(message);
+  };
   function setupEvents() {
     window.addEventListener("click", handleClickEvent);
+    window.addEventListener("input", handleInputEvent);
   }
 
   // ../../packages/diffDOM/dist/module.js

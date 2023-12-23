@@ -22,7 +22,7 @@ export type UpdateComponentMessage = Message & {
     };
 };
 
-export type EventType = 'click';
+export type EventType = 'click' | 'input';
 export type EventMessage = Message & {
     type: 'event';
     data: {
@@ -30,6 +30,7 @@ export type EventMessage = Message & {
         liveID: string;
         event: EventType;
         name: string;
+        value?: string;
         args?: string;
     };
 };

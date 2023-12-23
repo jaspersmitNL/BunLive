@@ -82,7 +82,7 @@ export class LiveViewCore {
             return;
         }
 
-        await context.view?.onEvent(context, message.data.event, message.data.name, message.data.args);
+        await context.view?.onEvent(context, message);
     }
 }
 

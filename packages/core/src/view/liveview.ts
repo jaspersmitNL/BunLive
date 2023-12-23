@@ -1,4 +1,4 @@
-import { UpdateComponentMessage } from '@bunlive/common';
+import { EventMessage, UpdateComponentMessage } from '@bunlive/common';
 import { DiffDOM, stringToObj } from '@bunlive/diff-dom';
 import { liveViewCore, wrapComponent } from '..';
 import LiveContext from '../context';
@@ -47,5 +47,5 @@ export class LiveView<T> {
         return await liveViewCore.updateLiveView(ctx);
     }
 
-    async onEvent(ctx: LiveContext<T>, event_type: string, event: string, args?: string) {}
+    async onEvent(ctx: LiveContext<T>, event: EventMessage) {}
 }

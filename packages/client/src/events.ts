@@ -29,6 +29,37 @@ const handleClickEvent = (event: MouseEvent) => {
     getLiveSocket()?.send(message);
 };
 
+const handleInputEvent = (event: any) => {
+    const target = event.target as any;
+
+    const liveInput = target.getAttribute('live-input');
+    if (!liveInput) {
+        return;
+    }
+
+    const liveElement = getClosestLiveElement(target);
+
+    if (!liveElement) {
+        return;
+    }
+
+    console.log('input event', liveElement, liveInput);
+
+    const message: EventMessage = {
+        type: 'event',
+        data: {
+            componentName: liveElement.getAttribute('live-component')!,
+            liveID: liveElement.getAttribute('live-id')!,
+            event: 'input',
+            name: liveInput,
+            value: target.value,
+        },
+    };
+
+    getLiveSocket()?.send(message);
+};
+
 export function setupEvents() {
     window.addEventListener('click', handleClickEvent);
+    window.addEventListener('input', handleInputEvent);
 }
