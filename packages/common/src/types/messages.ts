@@ -29,6 +29,7 @@ export type EventMessage = Message & {
         componentName: string;
         liveID: string;
         event: EventType;
+        name: string;
         args?: string;
     };
 };
