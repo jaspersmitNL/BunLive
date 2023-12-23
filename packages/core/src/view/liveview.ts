@@ -27,7 +27,7 @@ export class LiveView<T> {
         const oldDom = stringToObj(oldHtml);
         const newDom = stringToObj(newHtml);
 
-        const differ = new DiffDOM();
+        const differ = new DiffDOM({ compress: true });
 
         const patch = differ.diff(oldDom, newDom);
 
@@ -46,4 +46,6 @@ export class LiveView<T> {
     async update(ctx: LiveContext<T>) {
         return await liveViewCore.updateLiveView(ctx);
     }
+
+    async onEvent(ctx: LiveContext<T>, event_type: string, event: string, args?: string) {}
 }

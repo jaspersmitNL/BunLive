@@ -14,10 +14,21 @@ class ChildLiveView extends LiveView<any> {
         console.log('[ChildLiveView] unmounted');
     }
 
+    async onEvent(ctx: LiveContext<any>, event_type: string, event: string, args?: string | undefined): Promise<void> {
+        console.log('[ChildLiveView] event', event_type, event, args);
+
+        if (event === 'onClicChild') {
+            this.assign(ctx, {
+                name: 'ChildClick',
+            });
+        }
+    }
+
     async render(ctx: LiveContext<any>): Promise<string> {
         return (
             <div>
                 <p>Child Live View</p>
+                <button live-click="onClicChild">ChildClick</button>
                 <p>{ctx.get('name', '')}</p>
             </div>
         );
@@ -40,13 +51,35 @@ class MyLiveView extends LiveView<MyLiveViewState> {
         });
         ctx.ctx.ticker = setInterval(() => {
             this.assign(ctx, {
-                time: this.timeFromTZ(args.tz),
+                time: this.timeFromTZ(ctx.get('tz', '')),
             });
         }, 1000);
     }
     async onUnmount(ctx: LiveContext<MyLiveViewState>): Promise<void> {
         clearInterval(ctx.ctx.ticker);
         console.log('[MyLiveView] unmounted');
+    }
+    async onEvent(
+        ctx: LiveContext<MyLiveViewState>,
+        event_type: string,
+        event: string,
+        args?: string | undefined,
+    ): Promise<void> {
+        if (event === 'onClickMe') {
+            //swap tz from europe/Ams to europe/Lisbon
+            const tz = this.useLiveValue<string>(ctx, 'tz', '');
+            if (tz == 'Europe/Amsterdam') {
+                this.assign(ctx, {
+                    tz: 'Europe/Lisbon',
+                });
+            } else {
+                this.assign(ctx, {
+                    tz: 'Europe/Amsterdam',
+                });
+            }
+        }
+
+        console.log('[MyLiveView] event', event_type, event, args);
     }
 
     timeFromTZ(tz: string) {
@@ -73,6 +106,7 @@ class MyLiveView extends LiveView<MyLiveViewState> {
         return (
             <div>
                 <h1>{ctx.get('message', '')}</h1>
+                <button live-click="onClickMe">ClickMe</button>
                 <p>{tz} </p>
                 <p>{time}</p>
                 <hr />

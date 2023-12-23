@@ -7,6 +7,34 @@
     return value;
   };
 
+  // ../../packages/client/dist/events.js
+  var handleClickEvent = (event) => {
+    var _a;
+    const target = event.target;
+    const liveClick = target.getAttribute("live-click");
+    if (!liveClick) {
+      return;
+    }
+    const liveElement = getClosestLiveElement(target);
+    if (!liveElement) {
+      return;
+    }
+    console.log("click event", liveElement, liveClick);
+    const message = {
+      type: "event",
+      data: {
+        componentName: liveElement.getAttribute("live-component"),
+        liveID: liveElement.getAttribute("live-id"),
+        event: "click",
+        name: liveClick
+      }
+    };
+    (_a = getLiveSocket()) == null ? void 0 : _a.send(message);
+  };
+  function setupEvents() {
+    window.addEventListener("click", handleClickEvent);
+  }
+
   // ../../packages/diffDOM/dist/module.js
   var Diff = (
     /** @class */
@@ -1665,6 +1693,7 @@
     }
     const patch = JSON.parse(message.data.patch);
     const patcher = new DiffDOM({
+      compress: true,
       onNodeCreated(node) {
         var _a;
         if (node instanceof HTMLElement) {
@@ -1675,7 +1704,7 @@
             return;
           }
           console.log("[Client] found new live element: ", node);
-          (_a = window.liveSocket) == null ? void 0 : _a.register(node);
+          (_a = getLiveSocket()) == null ? void 0 : _a.register(node);
         }
       }
     });
@@ -1697,6 +1726,7 @@
         const element = liveElements[i];
         this.register(element);
       }
+      setupEvents();
     }
     onClose() {
       console.log("[Client] Disconnected from " + this.url);
@@ -1742,6 +1772,9 @@
   };
 
   // ../../packages/client/dist/index.js
+  function getLiveSocket() {
+    return window.liveSocket;
+  }
   function getClosestLiveElement(element) {
     if (element.getAttribute === void 0) {
       return null;

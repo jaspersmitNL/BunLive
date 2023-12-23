@@ -1,4 +1,4 @@
-import { Message, MessageType, RegisterMessage, base64Decode } from '@bunlive/common';
+import { EventMessage, Message, MessageType, RegisterMessage, base64Decode } from '@bunlive/common';
 import { WebSocketHandler, generateId, liveViewRegistry } from '.';
 import LiveContext from './context';
 
@@ -21,11 +21,12 @@ export class LiveViewCore {
     }
 
     handleMessage(message: Message, handler: WebSocketHandler) {
-        console.log('[Core] Handling message:', message);
-
         switch (message.type as MessageType) {
             case 'register':
                 this.handleRegister(message as RegisterMessage, handler);
+                break;
+            case 'event':
+                this.handleEvent(message as EventMessage, handler);
                 break;
         }
     }
@@ -71,6 +72,19 @@ export class LiveViewCore {
         }
 
         await context.view?.onMount(context, args);
+    }
+
+    private async handleEvent(message: EventMessage, handler: WebSocketHandler) {
+        const context = this.contexts.get(message.data.liveID);
+
+        if (!context) {
+            console.error('[Core] Context not found:', message.data.liveID);
+            return;
+        }
+
+        await context.view?.onEvent(context, message.data.event, message.data.name, message.data.args);
+
+        // await context.view?.onEvent(context, message.data.event, message.data.name, message.data.args);
     }
 }
 

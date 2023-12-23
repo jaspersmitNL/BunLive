@@ -1,6 +1,12 @@
+import { LiveSocket } from '.';
+
 export * from './socket';
 
-function getClosestLiveElement(element: Element): Element | null {
+export function getLiveSocket(): LiveSocket {
+    return (<any>window).liveSocket;
+}
+
+export function getClosestLiveElement(element: Element): Element | null {
     if (element.getAttribute === undefined) {
         return null;
     }
@@ -12,15 +18,3 @@ function getClosestLiveElement(element: Element): Element | null {
     }
     return null;
 }
-
-// //global listener for when a dom node is updated
-// window.addEventListener('DOMNodeInserted', (event) => {
-//     const liveElement = getClosestLiveElement(event.target as Element);
-//     if (liveElement) {
-//         const isRegistered = liveElement.getAttribute('live-registered');
-//         if (!isRegistered) {
-//             console.log('[Client] new element inserted: ', liveElement);
-//             (<any>window).liveSocket?.register(liveElement);
-//         }
-//     }
-// });

@@ -18,9 +18,7 @@ export class ElysiaWebSocketHandler implements WebSocketHandler {
         this.ws = ws;
     }
 
-    onConnectionOpen(): void {
-        this.send({ type: 'ping' });
-    }
+    onConnectionOpen(): void {}
 
     onMessageReceived(message: Message): void {
         liveViewCore.handleMessage(message, this);

@@ -1,5 +1,7 @@
+export type MessageType = 'register' | 'update_component' | 'event';
+
 export type Message = {
-    type: string;
+    type: MessageType;
 };
 
 export type RegisterMessage = Message & {
@@ -19,4 +21,14 @@ export type UpdateComponentMessage = Message & {
         patch: string;
     };
 };
-export type MessageType = 'register' | 'update_component';
+
+export type EventType = 'click';
+export type EventMessage = Message & {
+    type: 'event';
+    data: {
+        componentName: string;
+        liveID: string;
+        event: EventType;
+        args?: string;
+    };
+};

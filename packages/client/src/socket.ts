@@ -1,4 +1,5 @@
 import { Message, RegisterMessage } from '@bunlive/common';
+import { setupEvents } from './events';
 import { handleMessage } from './handler';
 
 export class LiveSocket {
@@ -16,6 +17,8 @@ export class LiveSocket {
             const element = liveElements[i];
             this.register(element);
         }
+
+        setupEvents();
     }
 
     onClose() {

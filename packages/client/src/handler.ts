@@ -1,6 +1,6 @@
 import { Message, MessageType, UpdateComponentMessage } from '@bunlive/common';
 import { DiffDOM } from '@bunlive/diff-dom';
-import { LiveSocket } from '.';
+import { LiveSocket, getLiveSocket } from '.';
 
 export function handleMessage(socket: LiveSocket, message: Message) {
     switch (message.type as MessageType) {
@@ -26,6 +26,7 @@ function handleUpdateComponentMessage(socket: LiveSocket, message: UpdateCompone
     }
     const patch = JSON.parse(message.data.patch);
     const patcher = new DiffDOM({
+        compress: true,
         onNodeCreated(node) {
             if (node instanceof HTMLElement) {
                 const liveID = node.getAttribute('live-id');
@@ -37,7 +38,7 @@ function handleUpdateComponentMessage(socket: LiveSocket, message: UpdateCompone
                 }
                 console.log('[Client] found new live element: ', node);
 
-                (<any>window).liveSocket?.register(node);
+                getLiveSocket()?.register(node);
             }
         },
     });
