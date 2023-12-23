@@ -7,15 +7,15 @@
     return value;
   };
 
-  // ../../node_modules/diff-dom/dist/module.js
+  // ../../packages/diffDOM/dist/module.js
   var Diff = (
     /** @class */
     function() {
       function Diff2(options) {
-        var _this = this;
         if (options === void 0) {
           options = {};
         }
+        var _this = this;
         Object.entries(options).forEach(function(_a) {
           var key = _a[0], value = _a[1];
           return _this[key] = value;
@@ -83,6 +83,9 @@
           node.selected = objNode.selected;
         }
       }
+    }
+    if (options.onNodeCreated) {
+      options.onNodeCreated(node);
     }
     return node;
   }
@@ -1445,9 +1448,13 @@
   var DEFAULT_OPTIONS = {
     debug: false,
     diffcap: 10,
+    // Limit for how many diffs are accepting when debugging. Inactive when debug is false.
     maxDepth: false,
+    // False or a numeral. If set to a numeral, limits the level of depth that the the diff mechanism looks for differences. If false, goes through the entire tree.
     maxChildCount: 50,
+    // False or a numeral. If set to a numeral, only does a simplified form of diffing of contents so that the number of diffs cannot be higher than the number of child nodes.
     valueDiffing: true,
+    // Whether to take into consideration the values of forms that differ from auto assigned values (when a user fills out a form).
     // syntax: textDiff: function (node, currentValue, expectedValue, newValue)
     textDiff: function(node, currentValue, expectedValue, newValue) {
       node.data = newValue;
@@ -1457,15 +1464,21 @@
     // `f && f()` and `if (f) { f(); }`
     preVirtualDiffApply: function() {
     },
+    // eslint-disable-line @typescript-eslint/no-empty-function
     postVirtualDiffApply: function() {
     },
+    // eslint-disable-line @typescript-eslint/no-empty-function
     preDiffApply: function() {
     },
+    // eslint-disable-line @typescript-eslint/no-empty-function
     postDiffApply: function() {
     },
+    // eslint-disable-line @typescript-eslint/no-empty-function
     filterOuterDiff: null,
     compress: false,
+    // Whether to work with compressed diffs
     _const: false,
+    // object with strings for every change types to be used in diffs.
     document: typeof window !== "undefined" && window.document ? window.document : false,
     components: []
     // list of components used for converting from string
@@ -1548,10 +1561,10 @@
     /** @class */
     function() {
       function TraceLogger2(obj) {
-        var _this = this;
         if (obj === void 0) {
           obj = {};
         }
+        var _this = this;
         this.pad = "\u2502   ";
         this.padding = "";
         this.tick = 1;
@@ -1644,7 +1657,6 @@
     }
   }
   function handleUpdateComponentMessage(socket, message) {
-    console.log("[Client] Received update_component message: ", message);
     const element = document.querySelector(`[live-id="${message.data.liveID}"][live-component="${message.data.componentName}"]`);
     if (!element) {
       console.error("[Client] Element not found", message.data.liveID, message.data.componentName);
@@ -1652,7 +1664,21 @@
       return;
     }
     const patch = JSON.parse(message.data.patch);
-    const patcher = new DiffDOM();
+    const patcher = new DiffDOM({
+      onNodeCreated(node) {
+        var _a;
+        if (node instanceof HTMLElement) {
+          const liveID = node.getAttribute("live-id");
+          const componentName = node.getAttribute("live-component");
+          const isRegistered = node.getAttribute("live-registered");
+          if (!liveID || !componentName || isRegistered) {
+            return;
+          }
+          console.log("[Client] found new live element: ", node);
+          (_a = window.liveSocket) == null ? void 0 : _a.register(node);
+        }
+      }
+    });
     patcher.apply(element, patch);
   }
 
@@ -1728,17 +1754,6 @@
     }
     return null;
   }
-  window.addEventListener("DOMNodeInserted", (event) => {
-    var _a;
-    const liveElement = getClosestLiveElement(event.target);
-    if (liveElement) {
-      const isRegistered = liveElement.getAttribute("live-registered");
-      if (!isRegistered) {
-        console.log("[Client] new element inserted: ", liveElement);
-        (_a = window.liveSocket) == null ? void 0 : _a.register(liveElement);
-      }
-    }
-  });
 
   // src/client/client.ts
   console.log("client.ts is loading");

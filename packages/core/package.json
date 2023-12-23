@@ -1,21 +1,20 @@
 {
-  "name": "@bunlive/core",
-  "type": "module",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
-  "scripts": {
-    "build": "tsc",
-    "dev": "tsc -w"
-  },
-  "dependencies": {
-    "@bunlive/common": "workspace:*",
-    "diff-dom": "^5.1.2",
-    "pino": "^8.17.1"
-  },
-  "devDependencies": {
-    "bun-types": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  }
+    "name": "@bunlive/core",
+    "type": "module",
+    "main": "dist/index.js",
+    "module": "dist/index.js",
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc -w"
+    },
+    "dependencies": {
+        "@bunlive/common": "workspace:*",
+        "@bunlive/diff-dom": "workspace:*"
+    },
+    "devDependencies": {
+        "bun-types": "latest"
+    },
+    "peerDependencies": {
+        "typescript": "^5.0.0"
+    }
 }

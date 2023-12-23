@@ -1,5 +1,5 @@
 import { UpdateComponentMessage } from '@bunlive/common';
-import { DiffDOM, stringToObj } from 'diff-dom';
+import { DiffDOM, stringToObj } from '@bunlive/diff-dom';
 import { liveViewCore, wrapComponent } from '..';
 import LiveContext from '../context';
 
@@ -28,6 +28,7 @@ export class LiveView<T> {
         const newDom = stringToObj(newHtml);
 
         const differ = new DiffDOM();
+
         const patch = differ.diff(oldDom, newDom);
 
         const message: UpdateComponentMessage = {

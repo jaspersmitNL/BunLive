@@ -1,5 +1,5 @@
 import { Message, MessageType, UpdateComponentMessage } from '@bunlive/common';
-import { DiffDOM } from 'diff-dom';
+import { DiffDOM } from '@bunlive/diff-dom';
 import { LiveSocket } from '.';
 
 export function handleMessage(socket: LiveSocket, message: Message) {
@@ -11,7 +11,7 @@ export function handleMessage(socket: LiveSocket, message: Message) {
 }
 
 function handleUpdateComponentMessage(socket: LiveSocket, message: UpdateComponentMessage) {
-    console.log('[Client] Received update_component message: ', message);
+    // console.log('[Client] Received update_component message: ', message);
 
     const element = document.querySelector(
         `[live-id="${message.data.liveID}"][live-component="${message.data.componentName}"]`,
@@ -25,7 +25,22 @@ function handleUpdateComponentMessage(socket: LiveSocket, message: UpdateCompone
         return;
     }
     const patch = JSON.parse(message.data.patch);
-    const patcher = new DiffDOM();
+    const patcher = new DiffDOM({
+        onNodeCreated(node) {
+            if (node instanceof HTMLElement) {
+                const liveID = node.getAttribute('live-id');
+                const componentName = node.getAttribute('live-component');
+                const isRegistered = node.getAttribute('live-registered');
+
+                if (!liveID || !componentName || isRegistered) {
+                    return;
+                }
+                console.log('[Client] found new live element: ', node);
+
+                (<any>window).liveSocket?.register(node);
+            }
+        },
+    });
 
     patcher.apply(element, patch);
 }

@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@bunlive/common": "workspace:*",
-    "diff-dom": "^5.1.2"
+    "@bunlive/diff-dom": "workspace:*"
   },
   "devDependencies": {
     "bun-types": "latest"

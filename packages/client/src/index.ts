@@ -13,14 +13,14 @@ function getClosestLiveElement(element: Element): Element | null {
     return null;
 }
 
-//global listener for when a dom node is updated
-window.addEventListener('DOMNodeInserted', (event) => {
-    const liveElement = getClosestLiveElement(event.target as Element);
-    if (liveElement) {
-        const isRegistered = liveElement.getAttribute('live-registered');
-        if (!isRegistered) {
-            console.log('[Client] new element inserted: ', liveElement);
-            (<any>window).liveSocket?.register(liveElement);
-        }
-    }
-});
+// //global listener for when a dom node is updated
+// window.addEventListener('DOMNodeInserted', (event) => {
+//     const liveElement = getClosestLiveElement(event.target as Element);
+//     if (liveElement) {
+//         const isRegistered = liveElement.getAttribute('live-registered');
+//         if (!isRegistered) {
+//             console.log('[Client] new element inserted: ', liveElement);
+//             (<any>window).liveSocket?.register(liveElement);
+//         }
+//     }
+// });
