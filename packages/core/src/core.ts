@@ -101,7 +101,7 @@ export class LiveViewCore {
             return;
         }
 
-        await context.view?.onEvent(context, message);
+        await context.view?.handleEvent(context, message);
     }
 }
 

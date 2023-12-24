@@ -5,7 +5,9 @@ import LiveContext from '../context';
 
 export class LiveView<T> {
     async onMount(ctx: LiveContext<T>, args: Record<string, any>) {}
-    async onUnmount(ctx: LiveContext<T>) {}
+    async onUnmount(ctx: LiveContext<T>) {
+        ctx.unsubscribeAll();
+    }
     async render(ctx: LiveContext<T>): Promise<string> {
         throw new Error('Please implement render method');
     }
@@ -47,5 +49,11 @@ export class LiveView<T> {
         return await liveViewCore.updateLiveView(ctx);
     }
 
-    async onEvent(ctx: LiveContext<T>, event: EventMessage) {}
+    on<E>(ctx: LiveContext<T>, name: string, handler: (event: E) => void) {
+        ctx.subscribe(name, handler.bind(this));
+    }
+
+    async handleEvent(ctx: LiveContext<T>, event: EventMessage) {
+        ctx.eventBus.emit(event.data.name, event);
+    }
 }
