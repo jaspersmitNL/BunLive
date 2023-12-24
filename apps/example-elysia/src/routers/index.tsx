@@ -4,6 +4,10 @@ import LiveContext from '@bunlive/core/dist/context';
 import { html } from '@elysiajs/html';
 import Elysia from 'elysia';
 
+function clamp(num: number, min: number, max: number) {
+    return Math.min(Math.max(num, min), max);
+}
+
 export class ChildLiveView extends LiveView<any> {
     async onMount(ctx: LiveContext, args: Record<string, any>): Promise<void> {
         console.log('[ChildLiveView] mounted');
@@ -40,18 +44,21 @@ class MyLiveView extends LiveView<MyLiveViewState> {
         switch (event.data.name) {
             case 'inc':
                 this.assign(ctx, {
-                    counter: ctx.state.counter! + 1,
+                    counter: clamp(ctx.state.counter! + 1, 0, 10),
                 });
                 break;
             case 'dec':
                 this.assign(ctx, {
-                    counter: ctx.state.counter! - 1,
+                    counter: clamp(ctx.state.counter! - 1, 0, 10),
                 });
                 break;
             case 'reset':
                 this.assign(ctx, {
                     counter: 0,
                 });
+                break;
+            case 'onSubmit':
+                console.log('onSubmit', event.data.value);
                 break;
         }
     }
@@ -73,6 +80,14 @@ class MyLiveView extends LiveView<MyLiveViewState> {
                         {liveViewChild('childLiveView', 'child', { foo: 'bar' })}
                     </div>
                 )}
+
+                <br />
+                <form live-submit="onSubmit">
+                    <label>name</label>
+                    <br />
+                    <input type="text" name="name" />
+                    <button type="submit">submit</button>
+                </form>
             </div>
         );
     }

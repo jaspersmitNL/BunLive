@@ -1,4 +1,4 @@
-export type MessageType = 'register' | 'update_component' | 'event';
+export type MessageType = 'register' | 'unregister' | 'update_component' | 'event';
 
 export type Message = {
     type: MessageType;
@@ -30,15 +30,15 @@ export type UpdateComponentMessage = Message & {
     };
 };
 
-export type EventType = 'click' | 'input';
-export type EventMessage = Message & {
+export type EventType = 'click' | 'input' | 'submit';
+export type EventMessage<T = string> = Message & {
     type: 'event';
     data: {
         componentName: string;
         liveID: string;
         event: EventType;
         name: string;
-        value?: string;
+        value?: T;
         args?: string;
     };
 };

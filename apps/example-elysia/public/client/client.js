@@ -55,9 +55,36 @@
     };
     (_a = getLiveSocket()) == null ? void 0 : _a.send(message);
   };
+  var handleSubmitEvent = (event) => {
+    var _a;
+    const target = event.target;
+    const liveSubmit = target.getAttribute("live-submit");
+    if (!liveSubmit) {
+      return;
+    }
+    const liveElement = getClosestLiveElement(target);
+    if (!liveElement) {
+      return;
+    }
+    event.preventDefault();
+    const formData = new FormData(target);
+    console.log("submit event", Object.fromEntries(formData));
+    const message = {
+      type: "event",
+      data: {
+        componentName: liveElement.getAttribute("live-component"),
+        liveID: liveElement.getAttribute("live-id"),
+        event: "submit",
+        name: liveSubmit,
+        value: Object.fromEntries(formData)
+      }
+    };
+    (_a = getLiveSocket()) == null ? void 0 : _a.send(message);
+  };
   function setupEvents() {
     window.addEventListener("click", handleClickEvent);
     window.addEventListener("input", handleInputEvent);
+    window.addEventListener("submit", handleSubmitEvent);
   }
 
   // ../../packages/diffDOM/dist/module.js
