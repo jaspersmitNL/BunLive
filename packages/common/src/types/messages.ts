@@ -13,6 +13,14 @@ export type RegisterMessage = Message & {
     };
 };
 
+export type UnregisterMessage = Message & {
+    type: 'unregister';
+    data: {
+        componentName: string;
+        liveID: string;
+    };
+};
+
 export type UpdateComponentMessage = Message & {
     type: 'update_component';
     data: {

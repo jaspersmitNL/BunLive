@@ -1742,14 +1742,21 @@
         }
       },
       onNodeDiscarded(node) {
+        var _a;
         if (node instanceof HTMLElement) {
-          const liveID = node.getAttribute("live-id");
-          const componentName = node.getAttribute("live-component");
-          const isRegistered = node.getAttribute("live-registered");
-          if (!liveID || !componentName || isRegistered) {
-            return;
+          const liveElements = node.querySelectorAll("[live-component]");
+          console.log("liveElements", liveElements);
+          for (let i = 0; i < liveElements.length; i++) {
+            const element2 = liveElements[i];
+            const liveID = element2.getAttribute("live-id");
+            const componentName = element2.getAttribute("live-component");
+            const isRegistered = element2.getAttribute("live-registered");
+            if (!liveID || !componentName || !isRegistered) {
+              continue;
+            }
+            console.log("[Client] found discarded live element: ", element2);
+            (_a = getLiveSocket()) == null ? void 0 : _a.unregister(element2);
           }
-          console.log("[Client] found discarded live element: ", node);
         }
       }
     });
@@ -1813,6 +1820,21 @@
         }
       });
       element.setAttribute("live-registered", "true");
+    }
+    unregister(element) {
+      const componentName = element.getAttribute("live-component");
+      const liveID = element.getAttribute("live-id");
+      if (!componentName || !liveID) {
+        return;
+      }
+      element.setAttribute("live-registered", "false");
+      this.send({
+        type: "unregister",
+        data: {
+          componentName,
+          liveID
+        }
+      });
     }
   };
 

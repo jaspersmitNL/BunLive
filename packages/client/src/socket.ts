@@ -1,4 +1,4 @@
-import { Message, RegisterMessage } from '@bunlive/common';
+import { Message, RegisterMessage, UnregisterMessage } from '@bunlive/common';
 import { setupEvents } from './events';
 import { handleMessage } from './handler';
 
@@ -70,5 +70,24 @@ export class LiveSocket {
         });
 
         element.setAttribute('live-registered', 'true');
+    }
+
+    public unregister(element: Element) {
+        const componentName = element.getAttribute('live-component');
+        const liveID = element.getAttribute('live-id');
+
+        if (!componentName || !liveID) {
+            return;
+        }
+
+        element.setAttribute('live-registered', 'false');
+
+        this.send<UnregisterMessage>({
+            type: 'unregister',
+            data: {
+                componentName,
+                liveID,
+            },
+        });
     }
 }

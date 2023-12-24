@@ -1,8 +1,25 @@
 import { EventMessage } from '@bunlive/common';
-import { LiveView, liveView, liveViewRegistry } from '@bunlive/core';
+import { LiveView, liveView, liveViewChild, liveViewRegistry } from '@bunlive/core';
 import LiveContext from '@bunlive/core/dist/context';
 import { html } from '@elysiajs/html';
 import Elysia from 'elysia';
+
+export class ChildLiveView extends LiveView<any> {
+    async onMount(ctx: LiveContext, args: Record<string, any>): Promise<void> {
+        console.log('[ChildLiveView] mounted');
+    }
+    async onUnmount(ctx: LiveContext): Promise<void> {
+        console.log('[ChildLiveView] unmounted');
+    }
+
+    async onEvent(ctx: LiveContext, event: EventMessage): Promise<void> {
+        console.log('[ChildLiveView] event', event);
+    }
+
+    async render(ctx: LiveContext): Promise<string> {
+        return <div>ChildLiveView</div>;
+    }
+}
 
 type MyLiveViewState = {
     counter: number;
@@ -49,9 +66,11 @@ class MyLiveView extends LiveView<MyLiveViewState> {
                 <button live-click="dec">-</button>
                 <button live-click="reset">reset</button>
                 <br />
+
                 {counter >= 2 && (
                     <div>
-                        <p>counter is greater than 2</p>
+                        <h1>uwu</h1>
+                        {liveViewChild('childLiveView', 'child', { foo: 'bar' })}
                     </div>
                 )}
             </div>
@@ -60,6 +79,7 @@ class MyLiveView extends LiveView<MyLiveViewState> {
 }
 
 liveViewRegistry.register('myLiveView', new MyLiveView());
+liveViewRegistry.register('childLiveView', new ChildLiveView());
 export const indexRouter = new Elysia()
     //@ts-ignore
     .use(html())

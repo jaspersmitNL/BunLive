@@ -43,14 +43,24 @@ function handleUpdateComponentMessage(socket: LiveSocket, message: UpdateCompone
         },
         onNodeDiscarded(node) {
             if (node instanceof HTMLElement) {
-                const liveID = node.getAttribute('live-id');
-                const componentName = node.getAttribute('live-component');
-                const isRegistered = node.getAttribute('live-registered');
+                // recursive find all child live elements
+                const liveElements = node.querySelectorAll('[live-component]');
 
-                if (!liveID || !componentName || isRegistered) {
-                    return;
+                console.log('liveElements', liveElements);
+
+                for (let i = 0; i < liveElements.length; i++) {
+                    const element = liveElements[i];
+
+                    const liveID = element.getAttribute('live-id');
+                    const componentName = element.getAttribute('live-component');
+                    const isRegistered = element.getAttribute('live-registered');
+
+                    if (!liveID || !componentName || !isRegistered) {
+                        continue;
+                    }
+                    console.log('[Client] found discarded live element: ', element);
+                    getLiveSocket()?.unregister(element);
                 }
-                console.log('[Client] found discarded live element: ', node);
             }
         },
     });
