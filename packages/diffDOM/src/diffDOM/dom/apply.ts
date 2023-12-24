@@ -1,5 +1,5 @@
-import { DiffDOMOptions, diffType, nodeType } from "../types"
 import { Diff, checkElementType } from "../helpers"
+import { DiffDOMOptions, diffType, nodeType } from "../types"
 
 import { objToNode } from "./fromVirtual"
 
@@ -129,6 +129,10 @@ export function applyDiff(
                     diff[options._const.newValue] as nodeType
                 ).nodeName.toLowerCase() === "svg" ||
                 node.parentNode.namespaceURI === "http://www.w3.org/2000/svg"
+
+            if (options.onNodeDiscarded) {
+                options.onNodeDiscarded(node)
+            }
             node.parentNode.replaceChild(
                 objToNode(
                     diff[options._const.newValue] as nodeType,
@@ -142,11 +146,16 @@ export function applyDiff(
         case options._const.relocateGroup:
             nodeArray = Array(
                 ...new Array(diff[options._const.groupLength]),
-            ).map(() =>
-                node.removeChild(
+            ).map(() => {
+                if (options.onNodeDiscarded) {
+                    options.onNodeDiscarded(
+                        node.childNodes[diff[options._const.from] as number],
+                    )
+                }
+                return node.removeChild(
                     node.childNodes[diff[options._const.from] as number],
-                ),
-            )
+                )
+            })
             nodeArray.forEach((childNode, index) => {
                 if (index === 0) {
                     reference =
@@ -156,6 +165,9 @@ export function applyDiff(
             })
             break
         case options._const.removeElement:
+            if (options.onNodeDiscarded) {
+                options.onNodeDiscarded(node)
+            }
             node.parentNode.removeChild(node)
             break
         case options._const.addElement: {

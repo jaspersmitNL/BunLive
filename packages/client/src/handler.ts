@@ -41,6 +41,18 @@ function handleUpdateComponentMessage(socket: LiveSocket, message: UpdateCompone
                 getLiveSocket()?.register(node);
             }
         },
+        onNodeDiscarded(node) {
+            if (node instanceof HTMLElement) {
+                const liveID = node.getAttribute('live-id');
+                const componentName = node.getAttribute('live-component');
+                const isRegistered = node.getAttribute('live-registered');
+
+                if (!liveID || !componentName || isRegistered) {
+                    return;
+                }
+                console.log('[Client] found discarded live element: ', node);
+            }
+        },
     });
 
     patcher.apply(element, patch);

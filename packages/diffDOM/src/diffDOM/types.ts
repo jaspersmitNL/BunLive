@@ -119,6 +119,7 @@ interface DiffDOMOptions {
     postDiffApply: PostDiffApply
     filterOuterDiff: null | ((t1, t2, diffs: Diff[]) => void | Diff[])
     onNodeCreated: (node: Element | Text | Comment) => void
+    onNodeDiscarded: (node: Element | Text | Comment) => void
     compress: boolean // Whether to work with compressed diffs
     _const: ConstNames // object with strings for every change types to be used in diffs.
     document: Document

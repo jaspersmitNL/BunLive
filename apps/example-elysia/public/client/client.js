@@ -224,11 +224,17 @@
         break;
       case options._const.replaceElement: {
         var insideSvg = diff[options._const.newValue].nodeName.toLowerCase() === "svg" || node.parentNode.namespaceURI === "http://www.w3.org/2000/svg";
+        if (options.onNodeDiscarded) {
+          options.onNodeDiscarded(node);
+        }
         node.parentNode.replaceChild(objToNode(diff[options._const.newValue], insideSvg, options), node);
         break;
       }
       case options._const.relocateGroup:
         nodeArray = Array.apply(void 0, new Array(diff[options._const.groupLength])).map(function() {
+          if (options.onNodeDiscarded) {
+            options.onNodeDiscarded(node.childNodes[diff[options._const.from]]);
+          }
           return node.removeChild(node.childNodes[diff[options._const.from]]);
         });
         nodeArray.forEach(function(childNode, index) {
@@ -239,6 +245,9 @@
         });
         break;
       case options._const.removeElement:
+        if (options.onNodeDiscarded) {
+          options.onNodeDiscarded(node);
+        }
         node.parentNode.removeChild(node);
         break;
       case options._const.addElement: {
@@ -1730,6 +1739,17 @@
           }
           console.log("[Client] found new live element: ", node);
           (_a = getLiveSocket()) == null ? void 0 : _a.register(node);
+        }
+      },
+      onNodeDiscarded(node) {
+        if (node instanceof HTMLElement) {
+          const liveID = node.getAttribute("live-id");
+          const componentName = node.getAttribute("live-component");
+          const isRegistered = node.getAttribute("live-registered");
+          if (!liveID || !componentName || isRegistered) {
+            return;
+          }
+          console.log("[Client] found discarded live element: ", node);
         }
       }
     });
