@@ -70,35 +70,6 @@ class MyLiveView extends LiveView<MyLiveViewState> {
         console.log('[MyLiveView] unmounted');
     }
 
-    // async onEvent(ctx: LiveContext<MyLiveViewState>, event: EventMessage): Promise<void> {
-    //     switch (event.data.name) {
-    //         case 'inc':
-    //             this.assign(ctx, {
-    //                 counter: clamp(ctx.state.counter! + 1, 0, 10),
-    //             });
-    //             break;
-    //         case 'dec':
-    //             this.assign(ctx, {
-    //                 counter: clamp(ctx.state.counter! - 1, 0, 10),
-    //             });
-    //             break;
-    //         case 'reset':
-    //             this.assign(ctx, {
-    //                 counter: 0,
-    //             });
-    //             break;
-    //         case 'onSubmit':
-    //             console.log('onSubmit', event.data.value);
-    //             break;
-
-    //         case 'onChange':
-    //             let e = event as EventMessage<{ name: string }>;
-
-    //             console.log('onChange', e.data.value!.name);
-    //             break;
-    //     }
-    // }
-
     async render(ctx: LiveContext<MyLiveViewState>): Promise<string> {
         const counter = ctx.state.counter!;
         return (
