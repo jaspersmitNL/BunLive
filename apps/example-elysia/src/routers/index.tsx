@@ -60,6 +60,10 @@ class MyLiveView extends LiveView<MyLiveViewState> {
             case 'onSubmit':
                 console.log('onSubmit', event.data.value);
                 break;
+
+            case 'onChange':
+                console.log('onChange', event.data.value);
+                break;
         }
     }
 
@@ -82,10 +86,12 @@ class MyLiveView extends LiveView<MyLiveViewState> {
                 )}
 
                 <br />
-                <form live-submit="onSubmit">
-                    <label>name</label>
-                    <br />
-                    <input type="text" name="name" />
+                <form live-submit="onSubmit" live-change="onChange">
+                    <div>
+                        <label>name</label>
+                        <br />
+                        <input type="text" name="name" />
+                    </div>
                     <button type="submit">submit</button>
                 </form>
             </div>

@@ -30,7 +30,7 @@ export type UpdateComponentMessage = Message & {
     };
 };
 
-export type EventType = 'click' | 'input' | 'submit';
+export type EventType = 'click' | 'input' | 'submit' | 'change';
 export type EventMessage<T = string> = Message & {
     type: 'event';
     data: {

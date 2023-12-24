@@ -91,8 +91,43 @@ const handleSubmitEvent = (event: any) => {
     getLiveSocket()?.send(message);
 };
 
+const handleChangeEvent = (event: any) => {
+    const target = event.target as any;
+    const form = target.form;
+
+    if (!form) {
+        return;
+    }
+
+    const liveElement = getClosestLiveElement(target);
+    const liveChange = form.getAttribute('live-change');
+
+    if (!liveElement || !liveChange) {
+        return;
+    }
+
+    const formData = new FormData(form);
+
+    const message: EventMessage<any> = {
+        type: 'event',
+        data: {
+            componentName: liveElement.getAttribute('live-component')!,
+            liveID: liveElement.getAttribute('live-id')!,
+            event: 'change',
+            name: liveChange,
+            value: Object.fromEntries(formData),
+        },
+    };
+
+    getLiveSocket()?.send(message);
+};
+
 export function setupEvents() {
     window.addEventListener('click', handleClickEvent);
     window.addEventListener('input', handleInputEvent);
     window.addEventListener('submit', handleSubmitEvent);
+
+    for (let type of ['change', 'input']) {
+        window.addEventListener(type, handleChangeEvent);
+    }
 }
